@@ -37,8 +37,8 @@ width: fit-content;
 <div class="board"></div>
 <script>
 
-const button = document.querySelector(“button”);
-const board = document.querySelector(“.board”);
+const button = document.querySelector("button");
+const board = document.querySelector(".board");
 let randomArray;
 let firstPlayer;
 let secondPlayer;
@@ -54,9 +54,9 @@ const deathCards = 1;
 const commonCards = length*width - cardsQuantity - deathCards;
 
 for(let i=0;i<length*width;i++) {
-board.insertAdjacentHTML(“afterbegin”,”<div></div>”);
+board.insertAdjacentHTML("afterbegin","<div></div>");
 }
-const cells = document.querySelectorAll(“.board div”);
+const cells = document.querySelectorAll(".board div");
 board.style = `grid-template-columns:repeat(${length}, 30px)`;
 alert(cells)
 button.addEventListener(“click”,()=>{
