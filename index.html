@@ -57,7 +57,7 @@ for(let i=0;i<length*width;i++) {
 board.insertAdjacentHTML(“afterbegin”,”<div></div>”);
 }
 const cells = document.querySelectorAll(“.board div”);
-board.style = `grid-template-columns:repeat(${length}, 10px)`;
+board.style = `grid-template-columns:repeat(${length}, 30px)`;
 
 button.addEventListener(“click”,()=>{
 randomArray = new Array(length*width).fill().map((i,ind)=>ind).sort(()=>Math.random()>0.5?1:-1);
