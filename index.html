@@ -36,7 +36,7 @@ width: fit-content;
 <button>СОЗДАТЬ</button>
 <div class="board"></div>
 <script>
-
+alert(1);
 const button = document.querySelector("button");
 const board = document.querySelector(".board");
 let randomArray;
@@ -44,12 +44,12 @@ let firstPlayer;
 let secondPlayer;
 const length = 5;
 const width = 4;
-
+alert(2);
 let cardsQuantity = Math.floor( length*width*0.75 );
 if(cardsQuantity%2===0) cardsQuantity++;
 const firstPlayerCards = cardsQuantity/2+0.5;
 const secondPlayerCards = cardsQuantity - firstPlayerCards;
-
+alert(3);
 const deathCards = 1;
 const commonCards = length*width - cardsQuantity - deathCards;
 
