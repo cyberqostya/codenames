@@ -52,7 +52,7 @@ if(cardsQuantity%2===0) cardsQuantity++;
 const firstPlayerCards = cardsQuantity/2+0.5;
 const secondPlayerCards = cardsQuantity - firstPlayerCards;
 alert(3);
-/*
+
 const deathCards = 1;
 const commonCards = length*width - cardsQuantity - deathCards;
 
@@ -62,21 +62,21 @@ board.insertAdjacentHTML("afterbegin","<div></div>");
 const cells = document.querySelectorAll(".board div");
 board.style = `grid-template-columns:repeat(${length}, 30px)`;
 alert(cells)
-button.addEventListener(“click”,()=>{
+button.addEventListener("click",()=>{
 randomArray = new Array(length*width).fill().map((i,ind)=>ind).sort(()=>Math.random()>0.5?1:-1);
 
-firstPlayer = Math.random()>0.5?”red”:”blue”;
-secondPlayer = firstPlayer === “red” ? “blue” : “red”;
+firstPlayer = Math.random()>0.5?"red":"blue";
+secondPlayer = firstPlayer === "red" ? "blue" : "red";
 document.body.style.background = firstPlayer;
 
 for(let i=0; i<length*width;i++){
 
 if(i<deathCards){
-cells[randomArray[i]].style.background = “#000”;continue;
+cells[randomArray[i]].style.background = "#000";continue;
 }
 alert(first)
 if(i<deathCards+commonCards){
-cells[randomArray[i]].style.background = “#00000088”;continue;
+cells[randomArray[i]].style.background = "#00000088";continue;
 }
 
 if(i<deathCards+commonCards+secondPlayerCards){
