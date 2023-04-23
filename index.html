@@ -51,7 +51,6 @@ let cardsQuantity = Math.floor( length*width*0.75 );
 if(cardsQuantity%2===0) cardsQuantity++;
 const firstPlayerCards = cardsQuantity/2+0.5;
 const secondPlayerCards = cardsQuantity - firstPlayerCards;
-alert(3);
 
 const deathCards = 1;
 const commonCards = length*width - cardsQuantity - deathCards;
@@ -61,7 +60,7 @@ board.insertAdjacentHTML("afterbegin","<div></div>");
 }
 const cells = document.querySelectorAll(".board div");
 board.style = `grid-template-columns:repeat(${length}, 30px)`;
-alert(cells)
+
 button.addEventListener("click",()=>{
 randomArray = new Array(length*width).fill().map((i,ind)=>ind).sort(()=>Math.random()>0.5?1:-1);
 
