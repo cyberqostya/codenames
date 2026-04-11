@@ -1,0 +1,71 @@
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 50px;
+  touch-action: manipulation;
+}
+
+body {
+  touch-action: manipulation;
+}
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+li {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  width: 100%;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+button,
+input,
+textarea {
+  display: block;
+  border: none;
+  background: none;
+  font-size: inherit;
+  line-height: 1;
+  color: inherit;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+[role="button"],
+[data-fancybox] {
+  cursor: pointer;
+}
+input {
+  width: 100%;
+
+  &[hidden] {
+    display: none;
+  }
+}
