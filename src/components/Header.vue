@@ -15,7 +15,9 @@ const mainStore = useMainStore();
     </div>
 
     <Button color="gold" @click="mainStore.toggleSettings" icon="cog" />
-    <Button class="coin" href="https://t.me/tribute/app?startapp=dq66" icon="coin" />
+    <a class="coin" href="https://pay.cloudtips.ru/p/656a5ae1" target="_blank">
+      <img src="/images/coin.png" />
+    </a>
   </header>
 </template>
 
@@ -74,30 +76,54 @@ const mainStore = useMainStore();
 }
 
 .coin {
-  background: linear-gradient(-45deg, #6a0dad, gold, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradientFlow 8s ease infinite;
+  position: relative;
+  padding: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+
   @media screen and (orientation: landscape) {
     transform: rotate(90deg);
     transform-origin: center;
   }
 
-  @keyframes gradientFlow {
-    0% {
-      background-position: 100% 100%;
-    }
-    25% {
-      background-position: 100% 0%;
-    }
-    50% {
-      background-position: 0% 0%;
-    }
-    75% {
-      background-position: 0% 100%;
-    }
-    100% {
-      background-position: 100% 100%;
-    }
+  img {
+    width: 34px;
+    height: 34px;
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.25));
+    animation:
+      coinFloat 8s ease-in-out infinite,
+      coinShine 22s ease-in-out infinite;
+    transform-origin: center;
+  }
+}
+@keyframes coinFloat {
+  0% {
+    transform: translateY(0px) rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) rotate(4deg) scale(1.03);
+  }
+  100% {
+    transform: translateY(0px) rotate(-4deg) scale(1);
+  }
+}
+@keyframes coinShine {
+  0% {
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98) saturate(0.96);
+  }
+  4% {
+    filter: drop-shadow(0 5px 11px rgba(176, 123, 18, 0.28)) brightness(1.12) saturate(1.08);
+  }
+  8% {
+    filter: drop-shadow(0 4px 9px rgba(151, 101, 11, 0.22)) brightness(1.02) saturate(1);
+  }
+  10% {
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98) saturate(0.96);
+  }
+  100% {
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98) saturate(0.96);
   }
 }
 </style>

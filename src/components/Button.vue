@@ -13,7 +13,7 @@ const props = defineProps({
   icon: {
     type: String,
     validator(value) {
-      return ["arrow", "cog", "coin"].includes(value);
+      return ["arrow", "cog"].includes(value);
     },
   },
 
