@@ -1,26 +1,34 @@
 <script setup>
 import Header from "@c/Header.vue";
 import Settings from "@c/Settings.vue";
+import BoardOrientationGuard from "@c/BoardOrientationGuard.vue";
 import { useMainStore } from "./stores/mainStore";
 import Board from "@c/Board.vue";
 
 const mainStore = useMainStore();
 mainStore.init();
-
-// Хитрости для скрытия адресной строки в landscape
-window.addEventListener("resize", async () => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  window.scrollTo(0, 100);
-});
 </script>
 
 <template>
-  <main>
+  <main class="main">
     <Header />
-    <Board v-if="!mainStore.isSettingsOpened" />
+
+    <BoardOrientationGuard v-if="!mainStore.isSettingsOpened">
+      <Board />
+    </BoardOrientationGuard>
 
     <Settings v-if="mainStore.isSettingsOpened" />
   </main>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.main {
+  @media (min-width: 600px) {
+    max-width: 600px;
+    right: 0;
+    margin-inline: auto;
+    border-left: 1px dashed $color-dashed-border;
+    border-right: 1px dashed $color-dashed-border;
+  }
+}
+</style>

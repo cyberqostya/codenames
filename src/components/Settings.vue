@@ -9,27 +9,29 @@ const mainStore = useMainStore();
 
 function handleClick(ind) {
   mainStore.setActiveResourceIndex(ind);
-  mainStore.setBoard()
+  mainStore.setBoard();
 }
 
 const cellText = computed({
   get() {
-    return mainStore.board.filter(i => i.type === 'text').map(cell => cell.value).join(', ');
+    return mainStore.board
+      .filter((i) => i.type === "text")
+      .map((cell) => cell.value)
+      .join(", ");
   },
   set(newVal) {
-    const values = newVal.split(',').map(s => s.trim());
-    const boardTextCells = mainStore.board.filter(i => i.type === 'text');
-    values.forEach((i,ind) => {
-      if( boardTextCells[ind] ) boardTextCells[ind].value = i;
-    })
+    const values = newVal.split(",").map((s) => s.trim());
+    const boardTextCells = mainStore.board.filter((i) => i.type === "text");
+    values.forEach((i, ind) => {
+      if (boardTextCells[ind]) boardTextCells[ind].value = i;
+    });
     // for (let i = 0; i < values.length; i++) {
     //   if (mainStore.board[i]) {
     //     mainStore.board[i].value = values[i];
     //   }
     // }
-  }
+  },
 });
-
 </script>
 
 <template>
@@ -40,13 +42,7 @@ const cellText = computed({
       <span class="field__title">Columns:</span>
 
       <div class="arrows">
-        <Button
-          :class="mainStore.columns !== i && 'disabled'"
-          @click="mainStore.setColRow('columns', i)"
-          v-for="i in [2, 3, 4, 5, 6]"
-          style="width: 34px"
-          >{{ i }}</Button
-        >
+        <Button :class="mainStore.columns !== i && 'disabled'" @click="mainStore.setColRow('columns', i)" v-for="i in [2, 3, 4, 5, 6]" style="width: 34px">{{ i }}</Button>
       </div>
     </div>
 
@@ -54,13 +50,7 @@ const cellText = computed({
       <span class="field__title">Rows:</span>
 
       <div class="arrows">
-        <Button
-          :class="mainStore.rows !== i && 'disabled'"
-          @click="mainStore.setColRow('rows', i)"
-          v-for="i in [2, 3, 4, 5, 6]"
-          style="width: 34px"
-          >{{ i }}</Button
-        >
+        <Button :class="mainStore.rows !== i && 'disabled'" @click="mainStore.setColRow('rows', i)" v-for="i in [2, 3, 4, 5, 6]" style="width: 34px">{{ i }}</Button>
       </div>
     </div>
 
@@ -68,17 +58,11 @@ const cellText = computed({
       <span class="field__title">Cards:</span>
 
       <div class="cards-buttons">
-        <Button
-          v-for="(i, ind) in mainStore.resources"
-          :key="ind"
-          @click="handleClick(ind)"
-          :class="mainStore.activeResourceIndex !== ind && 'disabled'"
-          >{{ i.title }}</Button
-        >
+        <Button v-for="(i, ind) in mainStore.resources" :key="ind" @click="handleClick(ind)" :class="mainStore.activeResourceIndex !== ind && 'disabled'">{{ i.title }}</Button>
       </div>
     </div>
 
-    <div class="field" v-if="mainStore.board.find(i => i.type === 'text')">
+    <div class="field" v-if="mainStore.board.find((i) => i.type === 'text')">
       <span class="field__title">Words: (can edit)</span>
       <Input tag="textarea" class="input" v-model="cellText" ref="textareaNode" />
     </div>
@@ -156,5 +140,6 @@ const cellText = computed({
   font-style: italic;
   font-weight: 600;
   resize: vertical;
+  line-height: 1.2;
 }
 </style>

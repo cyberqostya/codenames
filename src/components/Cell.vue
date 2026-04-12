@@ -64,7 +64,7 @@ function cancelHold() {
     @touchend="cancelHold"
     @touchcancel="cancelHold"
   >
-    <div class="progress" :style="{ height: progress + '%' }"></div>
+    <div class="progress" :style="{ width: progress + '%' }"></div>
 
     <span class="text" v-if="props.cell.type === 'text'" :style="{ '--char-count': props.cell.value.length }">{{ props.cell.value }}</span>
     <img class="image" v-else :src="props.cell.value" alt="codename" />
@@ -95,23 +95,24 @@ function cancelHold() {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
-  height: 0%;
+  width: 0%;
+  height: 100%;
   background: rgba($color-gold, 0.4);
-  transition: width 0.2s ease;
   z-index: 1;
 }
 
 .text {
-  width: 100%;
   white-space: nowrap;
   font-style: italic;
 
-  font-size: min(calc((100cqi / var(--char-count)) * 1.4), calc((100cqi / 6) * 1.4));
+  transform: rotate(90deg);
+  font-size: min(calc((100cqh / var(--char-count)) * 1.35), calc((100cqh / 6) * 1.35));
 }
 
 .image {
   object-fit: contain;
-  height: 100%;
+  transform: rotate(90deg);
+  width: 100cqh;
+  height: 100cqi;
 }
 </style>

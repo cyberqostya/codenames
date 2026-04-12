@@ -35,12 +35,6 @@ body {
   font-size: 20px;
 
   font-family: opensans, sans-serif;
-
-  @media screen and (orientation: landscape) {
-    // Для скрытия адресной строки
-    overflow: auto;
-    height: 200svh;
-  }
 }
 
 main {

@@ -18,8 +18,8 @@ export const useMainStore = defineStore("mainStore", {
     activeResourceIndex: 0,
     resources: [
       { title: "Words", quantity: words.length, randomResources: [] },
-      { title: "Default Pictures", quantity: 278, randomResources: [] },
-      { title: "Google AI Pictures", quantity: 351, randomResources: [] },
+      { title: "Default", quantity: 278, randomResources: [] },
+      { title: "Google AI", quantity: 351, randomResources: [] },
       { title: "Mix", randomResources: [] },
     ],
 
@@ -37,11 +37,11 @@ export const useMainStore = defineStore("mainStore", {
         const randomIndexesArray = shuffle(
           Array(i.quantity)
             .fill(0)
-            .map((_, ind) => ind + 1)
+            .map((_, ind) => ind + 1),
         );
 
-        if (i.title === "Default Pictures") i.randomResources = randomIndexesArray.map((i) => `/pics/pic${i}.png`);
-        else if (i.title === "Google AI Pictures") i.randomResources = randomIndexesArray.map((i) => `/svgs/pic${i}.svg`);
+        if (i.title === "Default") i.randomResources = randomIndexesArray.map((i) => `/pics/pic${i}.png`);
+        else if (i.title === "Google AI") i.randomResources = randomIndexesArray.map((i) => `/svgs/pic${i}.svg`);
         else if (i.title === "Words") i.randomResources = randomIndexesArray.map((i) => words[i]);
       });
     },
@@ -61,14 +61,16 @@ export const useMainStore = defineStore("mainStore", {
           this.resources[0].randomResources
             .toSpliced(uniqCardsQuantity)
             .concat(this.resources[1].randomResources.toSpliced(uniqCardsQuantity))
-            .concat(this.resources[2].randomResources.toSpliced(lastCardsQuantity))
+            .concat(this.resources[2].randomResources.toSpliced(lastCardsQuantity)),
         );
       }
 
-      this.board = Array(this.columns * this.rows).fill(0).map((i, ind) => ({
-        type: arrayOfResources[ind].match(/svg|png/) ? "image" : "text",
-        value: arrayOfResources[ind],
-      }))
+      this.board = Array(this.columns * this.rows)
+        .fill(0)
+        .map((i, ind) => ({
+          type: arrayOfResources[ind].match(/svg|png/) ? "image" : "text",
+          value: arrayOfResources[ind],
+        }));
 
       this.setCapitansKey();
       this.setActiveCards();
@@ -84,11 +86,7 @@ export const useMainStore = defineStore("mainStore", {
 
       const names = ["red", "blue"].sort(() => Math.random() - 0.5);
       const randomCapitansKeyArray = shuffle(
-        Array(cardsInFirstMoveTeam)
-          .fill(names[0])
-          .concat(Array(cardsInTeam).fill(names[1]))
-          .concat(Array(this.DEAD_WORDS).fill("black"))
-          .concat(Array(commonCards).fill("common"))
+        Array(cardsInFirstMoveTeam).fill(names[0]).concat(Array(cardsInTeam).fill(names[1])).concat(Array(this.DEAD_WORDS).fill("black")).concat(Array(commonCards).fill("common")),
       );
 
       this.board.forEach((i, ind) => (i.team = randomCapitansKeyArray[ind]));
@@ -105,12 +103,6 @@ export const useMainStore = defineStore("mainStore", {
     closeSettings() {
       this.isSettingsOpened = false;
     },
-    // changeColRow(aim, operation) {
-    //   // 'columns', -1
-    //   this[aim] = Math.min(this.MAX_COLUMNS, Math.max(this.MIN_COLUMNS, this[aim] + operation));
-
-    //   this.setBoard();
-    // },
     setColRow(aim, value) {
       this[aim] = value;
       this.setBoard();

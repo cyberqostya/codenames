@@ -29,19 +29,6 @@ const mainStore = useMainStore();
   display: flex;
   align-items: center;
   gap: 5px;
-
-  @media screen and (orientation: landscape) {
-    position: absolute;
-    bottom: -45px;
-
-    transform: rotate(-90deg);
-    transform-origin: top left;
-    width: 100dvh;
-
-    z-index: 6;
-
-    border-top: 1px dashed $color-dashed-border;
-  }
 }
 
 .counters {
@@ -54,8 +41,8 @@ const mainStore = useMainStore();
 }
 
 .counter {
-  width: 2em;
-  line-height: 34px;
+  width: 2ch;
+  line-height: 1;
   border-radius: 6px;
 
   font-family: roboto;
@@ -65,14 +52,6 @@ const mainStore = useMainStore();
   display: flex;
   align-items: center;
   justify-content: center;
-
-  span {
-    @media screen and (orientation: landscape) {
-      transform: rotate(90deg);
-      transform-origin: center;
-      font-size: 30px;
-    }
-  }
 }
 
 .coin {
@@ -83,15 +62,9 @@ const mainStore = useMainStore();
   place-items: center;
   overflow: visible;
 
-  @media screen and (orientation: landscape) {
-    transform: rotate(90deg);
-    transform-origin: center;
-  }
-
   img {
     width: 34px;
     height: 34px;
-    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.25));
     animation:
       coinFloat 8s ease-in-out infinite,
       coinShine 22s ease-in-out infinite;
