@@ -4,15 +4,14 @@ import { ref } from "vue";
 const mainStore = useMainStore();
 
 const props = defineProps({
-  cell: Object
+  cell: Object,
 });
 
 const progress = ref(0);
 let animationFrame;
 function startHold() {
-
   // Нельзя тап по уже открытым
-  if ((mainStore.isCapitansMode || props.cell.isActive)) return;
+  if (mainStore.isCapitansMode || props.cell.isActive) return;
 
   // Мультитач при зуме
   if (event.touches && event.touches.length > 1) return;
@@ -56,11 +55,18 @@ function cancelHold() {
 </script>
 
 <template>
-  <button :class="['cell', (mainStore.isCapitansMode || props.cell.isActive) && '_team-' + props.cell.team]" @mousedown="startHold" @touchstart="startHold" @mouseup="cancelHold"
-    @mouseleave="cancelHold" @touchend="cancelHold" @touchcancel="cancelHold">
+  <button
+    :class="['cell', (mainStore.isCapitansMode || props.cell.isActive) && '_team-' + props.cell.team]"
+    @mousedown="startHold"
+    @touchstart="startHold"
+    @mouseup="cancelHold"
+    @mouseleave="cancelHold"
+    @touchend="cancelHold"
+    @touchcancel="cancelHold"
+  >
     <div class="progress" :style="{ height: progress + '%' }"></div>
 
-    <span class="text" v-if="props.cell.type === 'text'">{{ props.cell.value }}</span>
+    <span class="text" v-if="props.cell.type === 'text'" :style="{ '--char-count': props.cell.value.length }">{{ props.cell.value }}</span>
     <img class="image" v-else :src="props.cell.value" alt="codename" />
   </button>
 </template>
@@ -70,7 +76,6 @@ function cancelHold() {
   padding: 5px;
   font-family: roboto;
   text-transform: uppercase;
-  font-style: italic;
   text-align: center;
   font-weight: 500;
   border: 1px solid $color-dashed-border;
@@ -82,6 +87,8 @@ function cancelHold() {
 
   position: relative;
   overflow: hidden;
+
+  container-type: size;
 }
 
 .progress {
@@ -96,8 +103,11 @@ function cancelHold() {
 }
 
 .text {
-  margin-left: -0.2em;
-  word-break: break-all;
+  width: 100%;
+  white-space: nowrap;
+  font-style: italic;
+
+  font-size: min(calc((100cqi / var(--char-count)) * 1.4), calc((100cqi / 6) * 1.4));
 }
 
 .image {

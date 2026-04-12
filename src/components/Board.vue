@@ -2,19 +2,13 @@
 import { useMainStore } from "@/stores/mainStore";
 import Cell from "@c/Cell.vue";
 const mainStore = useMainStore();
-
-function getFontSize() {
-  return Math.max(Math.max(window.innerHeight, window.innerWidth) / 37, 14) + "px";
-}
 </script>
 
 <template>
   <div
     class="board"
     :style="{
-      gridTemplateColumns: `repeat(${mainStore.columns}, 1fr)`,
-      gridTemplateRows: `repeat(${mainStore.rows}, minmax(calc(${100 / mainStore.rows + '%'} - 5px), 1fr))`,
-      fontSize: getFontSize(),
+      '--columns': mainStore.columns,
     }"
   >
     <Cell v-for="(cell, ind) in mainStore.board" :cell="cell" :key="ind" />
@@ -23,10 +17,15 @@ function getFontSize() {
 
 <style lang="scss" scoped>
 .board {
+  --columns: 5;
+  --rows: 4;
+
   display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
   grid-auto-rows: 1fr;
   gap: 5px;
   padding: 5px;
+  container-type: size;
 
   position: absolute;
   top: 0;
