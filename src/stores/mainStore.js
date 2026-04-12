@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { words } from "@/stores/words";
+import { aiImageCards, defaultImageCards, wordsCards } from "@/content/resources";
 import shuffle from "@/utils/shuffle";
 
 export const useMainStore = defineStore("mainStore", {
@@ -17,9 +17,21 @@ export const useMainStore = defineStore("mainStore", {
 
     activeResourceIndex: 0,
     resources: [
-      { title: "Words", quantity: words.length, randomResources: [] },
-      { title: "Default", quantity: 278, randomResources: [] },
-      { title: "Google AI", quantity: 351, randomResources: [] },
+      {
+        title: "Words",
+        sourceCards: wordsCards,
+        randomResources: [],
+      },
+      {
+        title: "Default",
+        sourceCards: defaultImageCards,
+        randomResources: [],
+      },
+      {
+        title: "Google AI",
+        sourceCards: aiImageCards,
+        randomResources: [],
+      },
       { title: "Mix", randomResources: [] },
     ],
 
@@ -33,16 +45,9 @@ export const useMainStore = defineStore("mainStore", {
       this.setBoard();
     },
     _createRandomResourcesArrays() {
-      this.resources.forEach((i) => {
-        const randomIndexesArray = shuffle(
-          Array(i.quantity)
-            .fill(0)
-            .map((_, ind) => ind + 1),
-        );
-
-        if (i.title === "Default") i.randomResources = randomIndexesArray.map((i) => `/pics/pic${i}.png`);
-        else if (i.title === "Google AI") i.randomResources = randomIndexesArray.map((i) => `/svgs/pic${i}.svg`);
-        else if (i.title === "Words") i.randomResources = randomIndexesArray.map((i) => words[i]);
+      this.resources.forEach((resource) => {
+        if (!resource.sourceCards) return;
+        resource.randomResources = shuffle([...resource.sourceCards]);
       });
     },
     setActiveResourceIndex(index) {
@@ -65,12 +70,7 @@ export const useMainStore = defineStore("mainStore", {
         );
       }
 
-      this.board = Array(this.columns * this.rows)
-        .fill(0)
-        .map((i, ind) => ({
-          type: arrayOfResources[ind].match(/svg|png/) ? "image" : "text",
-          value: arrayOfResources[ind],
-        }));
+      this.board = arrayOfResources.map((card) => ({ ...card }));
 
       this.setCapitansKey();
       this.setActiveCards();
@@ -79,10 +79,6 @@ export const useMainStore = defineStore("mainStore", {
       const cardsInTeam = Math.floor((this.columns * this.rows - this.DEAD_WORDS) / 3);
       const cardsInFirstMoveTeam = cardsInTeam + 1;
       const commonCards = this.columns * this.rows - this.DEAD_WORDS - cardsInFirstMoveTeam - cardsInTeam;
-
-      // Логика на 2 команды
-      // Первая команда всегда ходит и имеет на 1 карточку больше
-      // А имя команды присваивается случайно
 
       const names = ["red", "blue"].sort(() => Math.random() - 0.5);
       const randomCapitansKeyArray = shuffle(

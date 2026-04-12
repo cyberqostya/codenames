@@ -1,7 +1,23 @@
 <script setup>
 import Button from "@c/Button.vue";
 import { useMainStore } from "@/stores/mainStore";
+import { computed } from "vue";
 const mainStore = useMainStore();
+
+function getCount(color) {
+  return mainStore.board.filter((i) => i.team === color && !i.isActive).length;
+}
+const displayOrder = ["red", "blue"].sort((a, b) => getCount(b) - getCount(a)).concat("common");
+const counters = computed(() => {
+  const initialAcc = Object.fromEntries(displayOrder.map((color) => [color, 0]));
+
+  return mainStore.board.reduce((acc, item) => {
+    if (item.team in acc && !item.isActive) {
+      acc[item.team]++;
+    }
+    return acc;
+  }, initialAcc);
+});
 </script>
 
 <template>
@@ -9,8 +25,8 @@ const mainStore = useMainStore();
     <Button color="gold" @click="mainStore.toggleCapitansMode" :class="!mainStore.isCapitansMode && 'disabled'">Captain</Button>
 
     <div class="counters">
-      <p :class="['counter', '_team-' + color]" v-for="(color, index) in ['red', 'blue']" :key="index">
-        <span>{{ mainStore.board.filter((i) => i.team === color && !i.isActive).length }}</span>
+      <p :class="['counter', '_team-' + color]" v-for="color in displayOrder" :key="color">
+        <span>{{ counters[color] }}</span>
       </p>
     </div>
 

@@ -26,7 +26,6 @@ const props = defineProps({
 const iconMap = {
   arrow: () => import("@c/SVG/Arrow.vue"),
   cog: () => import("@c/SVG/Cog.vue"),
-  coin: () => import("@c/SVG/Coin.vue"),
 };
 const iconComponent = computed(() => {
   if (props.icon) {
