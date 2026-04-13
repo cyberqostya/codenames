@@ -97,7 +97,6 @@ function cancelHold() {
 <style lang="scss" scoped>
 .cell {
   padding: 5px;
-  border: 1px solid rgba($color-gray-400, 0.18);
   border-radius: 8px;
   background:
     linear-gradient(145deg, rgba(#fff, 0.34), rgba(#fff, 0) 42%),
