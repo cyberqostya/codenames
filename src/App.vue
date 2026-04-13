@@ -35,7 +35,7 @@ mainStore.createBoards();
   }
 }
 
-:global(.is-telegram) .main {
+.is-telegram .main {
   padding-top: env(safe-area-inset-top, 0px);
   padding-top: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
