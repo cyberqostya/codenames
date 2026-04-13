@@ -4,25 +4,31 @@ import { offlineCacheState } from "@/utils/serviceWorker";
 
 const isDoneVisible = ref(false);
 const statusMessage = computed(() => {
+  if (offlineCacheState.error) {
+    return "Ошибка оффлайна";
+  }
+
+  if (!offlineCacheState.isSupported) {
+    return "Оффлайн недоступен";
+  }
+
+  if (offlineCacheState.isRegistering) {
+    return "Подключаем оффлайн";
+  }
+
   if (offlineCacheState.isCaching) {
-    return "\u0413\u043e\u0442\u043e\u0432\u0438\u043c \u043e\u0444\u0444\u043b\u0430\u0439\u043d";
+    return "Готовим оффлайн";
   }
 
   if (offlineCacheState.failedCount) {
-    return "\u041e\u0444\u0444\u043b\u0430\u0439\u043d \u0447\u0430\u0441\u0442\u0438\u0447\u043d\u043e \u0433\u043e\u0442\u043e\u0432";
+    return "Оффлайн частично готов";
   }
 
   if (offlineCacheState.isReady || isDoneVisible.value) {
-    return "\u041e\u0444\u0444\u043b\u0430\u0439\u043d \u0433\u043e\u0442\u043e\u0432";
+    return "Оффлайн готов";
   }
 
   return "";
-});
-
-const message = computed(() => {
-  if (offlineCacheState.isCaching) return "Готовим оффлайн";
-  if (offlineCacheState.failedCount) return "Оффлайн частично готов";
-  if (isDoneVisible.value) return "Оффлайн готов";
 });
 
 watch(
@@ -38,7 +44,7 @@ watch(
 <template>
   <div v-if="statusMessage" class="offline-cache-status">
     <span
-      v-if="offlineCacheState.isCaching"
+      v-if="offlineCacheState.isRegistering || offlineCacheState.isCaching"
       class="offline-cache-status__spinner"
     />
     {{ statusMessage }}
