@@ -1,16 +1,22 @@
 <script setup>
 import { computed } from "vue";
 import { useMainStore } from "@/stores/mainStore";
+import { triggerHaptic } from "@/utils/telegram";
 
 const mainStore = useMainStore();
 const stepDuration = computed(() => mainStore.CAPITANS_MODE_COUNTDOWN_MS / 3);
+
+function offCountdown() {
+  mainStore.toggleCapitansMode();
+  triggerHaptic("light");
+}
 </script>
 
 <template>
   <div
     v-if="mainStore.isCapitansModeCountdown"
     class="countdown"
-    @click="mainStore.toggleCapitansMode"
+    @click="offCountdown"
   >
     <span
       :key="mainStore.capitansModeCountdownValue"

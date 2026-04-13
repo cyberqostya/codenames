@@ -3,6 +3,7 @@ import Button from "@c/Button.vue";
 import { useMainStore } from "@/stores/mainStore";
 import { computed } from "vue";
 import Cog from "@c/SVG/Cog.vue";
+import { triggerHaptic } from "@/utils/telegram";
 const mainStore = useMainStore();
 
 const counters = computed(() => {
@@ -16,13 +17,18 @@ const counters = computed(() => {
     Object.fromEntries(mainStore.teamNames.map((color) => [color, 0])),
   );
 });
+
+function toggleCapitansMode() {
+  triggerHaptic("light");
+  mainStore.toggleCapitansMode();
+}
 </script>
 
 <template>
   <header class="header">
     <Button
       color="gold"
-      @click="mainStore.toggleCapitansMode"
+      @click="toggleCapitansMode"
       :class="['captain', !mainStore.isCapitansMode && 'disabled']"
     >
       Captain

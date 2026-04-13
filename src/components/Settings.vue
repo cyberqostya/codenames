@@ -4,6 +4,7 @@ import Button from "@c/Button.vue";
 import Input from "@c/Input.vue";
 import { useMainStore } from "@/stores/mainStore";
 import { ref, computed } from "vue";
+import { triggerHaptic } from "@/utils/telegram";
 
 const mainStore = useMainStore();
 
@@ -52,7 +53,14 @@ function resume() {
     mainStore.setCapitansKey();
   }
 
+  triggerHaptic("light");
+
   mainStore.closeSettings();
+}
+
+function withVibro(f) {
+  triggerHaptic("light");
+  f();
 }
 </script>
 
@@ -67,7 +75,11 @@ function resume() {
         <Button
           v-for="i in boardColumnsRangeArray"
           :class="{ disabled: i != columns }"
-          @click="columns = i"
+          @click="
+            withVibro(() => {
+              columns = i;
+            })
+          "
           :key="i"
         >
           {{ i }}
@@ -82,7 +94,11 @@ function resume() {
         <Button
           v-for="i in boardColumnsRangeArray"
           :class="{ disabled: i != rows }"
-          @click="rows = i"
+          @click="
+            withVibro(() => {
+              rows = i;
+            })
+          "
           :key="i"
         >
           {{ i }}
@@ -97,7 +113,7 @@ function resume() {
         <Button
           v-for="i in mainStore.resources"
           :key="i.title"
-          @click="mainStore.setActiveResource(i)"
+          @click="withVibro(mainStore.setActiveResource(i))"
           :class="{ disabled: !i.isActive }"
         >
           {{ i.title }}
@@ -126,13 +142,13 @@ function resume() {
 
       <div class="cards-buttons">
         <Button
-          @click="mainStore.toggleIsChangeCapitansMap()"
+          @click="withVibro(mainStore.toggleIsChangeCapitansMap)"
           :class="{ disabled: !mainStore.isChangeCapitansMap }"
         >
           Change Capitans Map
         </Button>
         <Button
-          @click="mainStore.toggleIsReshuffleCards()"
+          @click="withVibro(mainStore.toggleIsReshuffleCards)"
           :class="{ disabled: !mainStore.isReshuffleCards }"
         >
           Reshuffle cards

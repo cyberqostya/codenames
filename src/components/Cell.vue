@@ -3,6 +3,8 @@ import { useMainStore } from "@/stores/mainStore";
 import { ref } from "vue";
 const mainStore = useMainStore();
 
+import { triggerHaptic } from "@/utils/telegram";
+
 const props = defineProps({
   idx: Number,
 });
@@ -18,6 +20,8 @@ function startHold() {
 
   // Мультитач при зуме
   if (event.touches && event.touches.length > 1) return;
+
+  triggerHaptic("light");
 
   cancelAnimationFrame(animationFrame);
   const duration = 1000;
@@ -41,6 +45,8 @@ function startHold() {
       });
 
       progress.value = 0;
+
+      triggerHaptic("medium");
     }
   }
   animationFrame = requestAnimationFrame(animate);
