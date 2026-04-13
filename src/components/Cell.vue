@@ -14,12 +14,14 @@ let animationFrame;
 
 const cell = mainStore.activeResource.board[props.idx];
 
-function startHold() {
+function startHold(event) {
   // Нельзя тап по уже открытым
   if (mainStore.isCapitansMode || cell.isActive) return;
 
   // Мультитач при зуме
-  if (event.touches && event.touches.length > 1) return;
+  if (event?.touches && event.touches.length > 1) return;
+
+  event?.preventDefault();
 
   triggerHaptic("light");
 
@@ -81,6 +83,7 @@ function cancelHold() {
     @mouseleave="cancelHold"
     @touchend="cancelHold"
     @touchcancel="cancelHold"
+    @contextmenu.prevent
   >
     <div class="progress" :style="{ width: progress + '%' }"></div>
 
@@ -90,7 +93,13 @@ function cancelHold() {
       :style="{ '--char-count': cell.value.length }"
       >{{ cell.value }}</span
     >
-    <img class="image" v-else :src="cell.value" alt="codename" />
+    <img
+      class="image"
+      v-else
+      :src="cell.value"
+      alt="codename"
+      draggable="false"
+    />
   </button>
 </template>
 
@@ -102,7 +111,6 @@ function cancelHold() {
     linear-gradient(145deg, rgba(#fff, 0.34), rgba(#fff, 0) 42%),
     linear-gradient(180deg, $color-back-second, $color-back);
   box-shadow:
-    0 1px 0 rgba(#fff, 0.72) inset,
     0 -1px 0 rgba($color-gray-400, 0.08) inset,
     0 7px 12px rgba($color-gray-400, 0.16),
     0 2px 3px rgba($color-black, 0.12);
@@ -120,6 +128,12 @@ function cancelHold() {
     box-shadow 0.2s ease,
     transform 0.2s ease,
     filter 0.2s ease;
+
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cell::before {
@@ -167,6 +181,9 @@ function cancelHold() {
   z-index: 3;
 
   pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .image {
@@ -179,5 +196,9 @@ function cancelHold() {
   filter: drop-shadow(0 2px 2px rgba($color-black, 0.1));
 
   pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
 }
 </style>

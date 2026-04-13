@@ -24,7 +24,7 @@ const mainStore = useMainStore();
   display: grid;
   grid-template-columns: repeat(var(--columns), 1fr);
   grid-auto-rows: 1fr;
-  gap: 3px;
+  gap: 5px;
   padding: 5px;
   height: 100%;
 }
