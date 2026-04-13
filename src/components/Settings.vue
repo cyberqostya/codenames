@@ -2,6 +2,7 @@
 import Title from "@c/Title.vue";
 import Button from "@c/Button.vue";
 import WordsEditor from "@c/WordsEditor.vue";
+import OfflineCacheStatus from "@c/OfflineCacheStatus.vue";
 import { useMainStore } from "@/stores/mainStore";
 import { ref, computed } from "vue";
 import { triggerHaptic } from "@/utils/telegram";
@@ -128,6 +129,8 @@ function withVibro(f) {
       </Button>
     </div>
 
+    <OfflineCacheStatus class="offline-status" />
+
     <Button color="gold" class="close" @click="resume">
       {{ isNewGame ? "New Game" : "Resume" }}
     </Button>
@@ -206,7 +209,11 @@ function withVibro(f) {
 }
 
 .close {
-  margin: auto 5px 5px;
+  margin: 0 5px 5px;
   min-height: 64px;
+}
+
+.offline-status {
+  margin: auto 5px 5px;
 }
 </style>

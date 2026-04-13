@@ -40,10 +40,6 @@ watch(
 
 <style lang="scss" scoped>
 .offline-cache-status {
-  position: fixed;
-  z-index: 200;
-  right: 12px;
-  bottom: 12px;
   padding: 8px 12px;
   color: white;
   background: rgba($color-black, 0.78);
@@ -52,6 +48,7 @@ watch(
   font-family: roboto;
   font-size: 13px;
   letter-spacing: 0.02em;
+  text-align: center;
   box-shadow: 0 8px 22px rgba($color-black, 0.2);
   pointer-events: none;
 }
