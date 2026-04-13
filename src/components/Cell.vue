@@ -9,24 +9,34 @@ const props = defineProps({
   idx: Number,
 });
 
+const emit = defineEmits(["previewImage"]);
+
 const progress = ref(0);
 let animationFrame;
+let pressStartTime = 0;
+let isHoldCompleted = false;
+
+const HOLD_TO_OPEN_MS = 1000;
+const TAP_PREVIEW_MAX_MS = 220;
 
 const cell = mainStore.activeResource.board[props.idx];
 
 function startHold(event) {
+  pressStartTime = performance.now();
+  isHoldCompleted = false;
   // Нельзя тап по уже открытым
   if (mainStore.isCapitansMode || cell.isActive) return;
 
   // Мультитач при зуме
   if (event?.touches && event.touches.length > 1) return;
+  if (event?.isPrimary === false) return;
 
   event?.preventDefault();
 
   triggerHaptic("light");
 
   cancelAnimationFrame(animationFrame);
-  const duration = 1000;
+  const duration = HOLD_TO_OPEN_MS;
   const startTime = performance.now();
   const start = progress.value;
 
@@ -39,6 +49,7 @@ function startHold(event) {
     if (progress.value < 100) {
       animationFrame = requestAnimationFrame(animate);
     } else {
+      isHoldCompleted = true;
       // cell.isActive = true;
       // вместо
       // Добавление isActive всем ресурсам
@@ -56,8 +67,20 @@ function startHold(event) {
   }
   animationFrame = requestAnimationFrame(animate);
 }
-function cancelHold() {
+function cancelHold(shouldPreview = false) {
   cancelAnimationFrame(animationFrame);
+
+  const pressDuration = performance.now() - pressStartTime;
+
+  if (
+    shouldPreview &&
+    cell.type === "image" &&
+    !isHoldCompleted &&
+    pressDuration <= TAP_PREVIEW_MAX_MS
+  ) {
+    emit("previewImage", cell.value);
+  }
+
   const duration = 300;
   const startTime = performance.now();
   const start = progress.value;
@@ -82,9 +105,9 @@ function cancelHold() {
     ]"
     @mousedown="startHold"
     @touchstart="startHold"
-    @mouseup="cancelHold"
+    @mouseup="cancelHold(true)"
     @mouseleave="cancelHold"
-    @touchend="cancelHold"
+    @touchend="cancelHold(true)"
     @touchcancel="cancelHold"
     @contextmenu.prevent
   >
