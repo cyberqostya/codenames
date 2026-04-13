@@ -49,8 +49,7 @@ function cacheOfflineAssets(worker) {
 }
 
 export function registerServiceWorker() {
-  offlineCacheState.isSupported =
-    "serviceWorker" in navigator && "caches" in window;
+  offlineCacheState.isSupported = "serviceWorker" in navigator;
 
   if (!import.meta.env.PROD || !offlineCacheState.isSupported) return;
 
