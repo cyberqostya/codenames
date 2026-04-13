@@ -147,14 +147,24 @@ function withVibro(f) {
 }
 
 .is-telegram .settings {
-  inset: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)) 0
-    var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(
+    --tg-safe-area-inset-bottom,
+    env(safe-area-inset-bottom, 0px)
+  );
+  box-sizing: border-box;
 }
 
 .title {
   border-bottom: 1px dashed $color-dashed-border;
   padding: 5px;
   line-height: 34px;
+}
+
+.is-telegram .title {
+  margin-top: 42px;
 }
 
 .field {
