@@ -21,7 +21,7 @@ const colors = {
 
 <template>
   <component
-    :class="['button', color, icon && 'icon']"
+    :class="['button', color]"
     :is="href ? 'a' : 'button'"
     :href="href"
     :target="href && '_blank'"

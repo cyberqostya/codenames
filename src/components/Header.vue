@@ -23,7 +23,7 @@ const counters = computed(() => {
     <Button
       color="gold"
       @click="mainStore.toggleCapitansMode"
-      :class="!mainStore.isCapitansMode && 'disabled'"
+      :class="['captain', !mainStore.isCapitansMode && 'disabled']"
     >
       Captain
     </Button>
@@ -34,7 +34,9 @@ const counters = computed(() => {
         v-for="color in mainStore.teamNames"
         :key="color"
       >
-        {{ counters[color] }}
+        <span>
+          {{ counters[color] }}
+        </span>
       </p>
     </div>
 
@@ -61,26 +63,32 @@ const counters = computed(() => {
 }
 
 .counters {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-
   margin: auto;
+  display: flex;
+  justify-content: center;
+  height: 38px;
+  gap: 5px;
 }
 
 .counter {
+  font-size: 34px;
   width: 2.5ch;
+  height: 100%;
   line-height: 1;
   border-radius: 6px;
 
   font-family: roboto;
   font-weight: 600;
-  font-size: 34px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  span {
+    rotate: 90deg;
+    letter-spacing: -0.15em;
+    margin-top: -0.2em;
+  }
 }
 
 .settings {

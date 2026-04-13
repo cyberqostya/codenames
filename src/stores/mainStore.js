@@ -6,6 +6,13 @@ import {
 } from "@/content/resources";
 import shuffle from "@/utils/shuffle";
 
+let capitansCountdownTimeouts = [];
+
+function clearCapitansCountdownTimeouts() {
+  capitansCountdownTimeouts.forEach((timeout) => clearTimeout(timeout));
+  capitansCountdownTimeouts = [];
+}
+
 export const useMainStore = defineStore("mainStore", {
   state: () => ({
     isSettingsOpened: false,
@@ -44,6 +51,9 @@ export const useMainStore = defineStore("mainStore", {
     ],
 
     isCapitansMode: false,
+    isCapitansModeCountdown: false,
+    capitansModeCountdownValue: null,
+    CAPITANS_MODE_COUNTDOWN_MS: 1200,
     isChangeCapitansMap: false,
     isReshuffleCards: false,
   }),
@@ -136,10 +146,50 @@ export const useMainStore = defineStore("mainStore", {
     },
 
     toggleCapitansMode() {
-      this.isCapitansMode = !this.isCapitansMode;
+      if (this.isCapitansMode || this.isCapitansModeCountdown) {
+        this.closeCapitansMode();
+        return;
+      }
+
+      this.startCapitansModeCountdown();
     },
+
+    startCapitansModeCountdown() {
+      clearCapitansCountdownTimeouts();
+
+      const countdownNumbers = [3, 2, 1];
+      const stepDuration =
+        this.CAPITANS_MODE_COUNTDOWN_MS / countdownNumbers.length;
+
+      this.isCapitansModeCountdown = true;
+      this.capitansModeCountdownValue = countdownNumbers[0];
+
+      countdownNumbers.slice(1).forEach((number, index) => {
+        capitansCountdownTimeouts.push(
+          setTimeout(
+            () => {
+              this.capitansModeCountdownValue = number;
+            },
+            stepDuration * (index + 1),
+          ),
+        );
+      });
+
+      capitansCountdownTimeouts.push(
+        setTimeout(() => {
+          this.isCapitansModeCountdown = false;
+          this.capitansModeCountdownValue = null;
+          this.isCapitansMode = true;
+          clearCapitansCountdownTimeouts();
+        }, this.CAPITANS_MODE_COUNTDOWN_MS),
+      );
+    },
+
     closeCapitansMode() {
+      clearCapitansCountdownTimeouts();
       this.isCapitansMode = false;
+      this.isCapitansModeCountdown = false;
+      this.capitansModeCountdownValue = null;
     },
 
     toggleIsChangeCapitansMap() {
