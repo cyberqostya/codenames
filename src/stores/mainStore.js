@@ -1,119 +1,159 @@
 import { defineStore } from "pinia";
-import { aiImageCards, defaultImageCards, wordsCards } from "@/content/resources";
+import {
+  aiImageCards,
+  defaultImageCards,
+  wordsCards,
+} from "@/content/resources";
 import shuffle from "@/utils/shuffle";
 
 export const useMainStore = defineStore("mainStore", {
   state: () => ({
     isSettingsOpened: false,
-    DEAD_WORDS: 1,
 
-    MIN_COLUMNS: 2,
+    DEAD_CARDS: 1,
+    MIN_COLUMNS: 3,
     MAX_COLUMNS: 6,
+
+    // По умолчанию
     columns: 5,
     rows: 4,
+    teamNames: [],
 
-    // [{type: 'text', value: 'Пригорок', isActive: false, team: 'red' }]
-    board: [],
-
-    activeResourceIndex: 0,
+    // Просчитываем сразу все игровые поля (разные ресурсы),
+    // чтобы на лету можно было менять размеры, тип поля
     resources: [
       {
         title: "Words",
         sourceCards: wordsCards,
-        randomResources: [],
+        isActive: false,
       },
       {
         title: "Default",
         sourceCards: defaultImageCards,
-        randomResources: [],
+        isActive: true,
       },
       {
-        title: "Google AI",
+        title: "AI",
         sourceCards: aiImageCards,
-        randomResources: [],
+        isActive: false,
       },
-      { title: "Mix", randomResources: [] },
+      {
+        title: "Mix",
+        isActive: false,
+      },
     ],
 
     isCapitansMode: false,
+    isChangeCapitansMap: false,
+    isReshuffleCards: false,
   }),
 
+  getters: {
+    activeResource: (state) => state.resources.find((r) => r.isActive),
+  },
+
   actions: {
-    init() {
-      this._createRandomResourcesArrays();
-      this.setActiveResourceIndex(Math.floor(Math.random() * (this.resources.length - 1)));
-      this.setBoard();
-    },
-    _createRandomResourcesArrays() {
+    createBoards() {
+      const cardsQuantity = this.columns * this.rows;
+
+      // Заполняем каждое игровое поле ресурсов перемешанными ресурсами
+      // Добавляя свойство "board"
       this.resources.forEach((resource) => {
-        if (!resource.sourceCards) return;
-        resource.randomResources = shuffle([...resource.sourceCards]);
+        if (resource.title != "Mix") {
+          resource.board = shuffle([...resource.sourceCards])
+            .slice(0, cardsQuantity)
+            .map((card) => ({ ...card }));
+        } else {
+          // Для Микса
+          const uniqCardsQuantity = Math.floor(cardsQuantity / 3);
+          const lastCardsQuantity = cardsQuantity - 2 * uniqCardsQuantity;
+          const res1 = [...this.resources[0].sourceCards]
+            .slice(0, uniqCardsQuantity)
+            .map((card) => ({ ...card }));
+          const res2 = [...this.resources[1].sourceCards]
+            .slice(0, uniqCardsQuantity)
+            .map((card) => ({ ...card }));
+          const res3 = [...this.resources[2].sourceCards]
+            .slice(0, lastCardsQuantity)
+            .map((card) => ({ ...card }));
+          resource.board = shuffle(res1.concat(res2).concat(res3));
+        }
       });
-    },
-    setActiveResourceIndex(index) {
-      this.activeResourceIndex = index;
-    },
-    setBoard() {
-      const resource = this.resources[this.activeResourceIndex];
-      let arrayOfResources = resource.randomResources.toSpliced(this.columns * this.rows);
-
-      // Mix
-      if (resource.title === "Mix") {
-        const uniqCardsQuantity = Math.floor((this.columns * this.rows) / 3);
-        const lastCardsQuantity = this.columns * this.rows - 2 * uniqCardsQuantity;
-
-        arrayOfResources = shuffle(
-          this.resources[0].randomResources
-            .toSpliced(uniqCardsQuantity)
-            .concat(this.resources[1].randomResources.toSpliced(uniqCardsQuantity))
-            .concat(this.resources[2].randomResources.toSpliced(lastCardsQuantity)),
-        );
-      }
-
-      this.board = arrayOfResources.map((card) => ({ ...card }));
 
       this.setCapitansKey();
-      this.setActiveCards();
-    },
-    setCapitansKey() {
-      const cardsInTeam = Math.floor((this.columns * this.rows - this.DEAD_WORDS) / 3);
-      const cardsInFirstMoveTeam = cardsInTeam + 1;
-      const commonCards = this.columns * this.rows - this.DEAD_WORDS - cardsInFirstMoveTeam - cardsInTeam;
 
-      const names = ["red", "blue"].sort(() => Math.random() - 0.5);
+      // console.log(this.resources);
+    },
+
+    setCapitansKey() {
+      const cardsQuantity = this.columns * this.rows;
+
+      const cardsInTeam = Math.floor(cardsQuantity / 3);
+      const t1 = cardsInTeam + 1;
+      const t2 = cardsInTeam;
+      const t3 = cardsQuantity - t1 - t2 - this.DEAD_CARDS;
+
+      // Кто первый ходит
+      this.teamNames = shuffle(["red", "blue"]).concat(["common"]);
+
       const randomCapitansKeyArray = shuffle(
-        Array(cardsInFirstMoveTeam).fill(names[0]).concat(Array(cardsInTeam).fill(names[1])).concat(Array(this.DEAD_WORDS).fill("black")).concat(Array(commonCards).fill("common")),
+        Array(t1)
+          .fill(this.teamNames[0])
+          .concat(Array(t2).fill(this.teamNames[1]))
+          .concat(Array(t3).fill(this.teamNames[2]))
+          .concat(Array(this.DEAD_CARDS).fill("black")),
       );
 
-      this.board.forEach((i, ind) => (i.team = randomCapitansKeyArray[ind]));
-    },
-    setActiveCards() {
-      this.board.forEach((i) => (i.isActive = false));
+      this.resources.forEach((resource) => {
+        resource.board.forEach((cell, ind) => {
+          cell.team = randomCapitansKeyArray[ind];
+          cell.isActive = false;
+        });
+      });
     },
 
     // setings
-    toggleSettings() {
-      this.isSettingsOpened = !this.isSettingsOpened;
-      this.offCapitansMode();
+    openSettings() {
+      this.isSettingsOpened = true;
     },
     closeSettings() {
       this.isSettingsOpened = false;
+      this.closeCapitansMode();
+      this.closeIsChangeCapitansMap();
+      this.closeIsReshuffleCards();
     },
-    setColRow(aim, value) {
-      this[aim] = value;
-      this.setBoard();
+
+    setColumns(val) {
+      this.columns = val;
+    },
+    setRows(val) {
+      this.rows = val;
+    },
+
+    setActiveResource(resource) {
+      this.resources.find((i) => i.isActive).isActive = false;
+      resource.isActive = true;
     },
 
     toggleCapitansMode() {
       this.isCapitansMode = !this.isCapitansMode;
     },
-    offCapitansMode() {
+    closeCapitansMode() {
       this.isCapitansMode = false;
     },
 
-    // game
-    startGame() {
-      this.closeSettings();
+    toggleIsChangeCapitansMap() {
+      this.isChangeCapitansMap = !this.isChangeCapitansMap;
+    },
+    closeIsChangeCapitansMap() {
+      this.isChangeCapitansMap = false;
+    },
+
+    toggleIsReshuffleCards() {
+      this.isReshuffleCards = !this.isReshuffleCards;
+    },
+    closeIsReshuffleCards() {
+      this.isReshuffleCards = false;
     },
   },
 });

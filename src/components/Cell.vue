@@ -4,14 +4,17 @@ import { ref } from "vue";
 const mainStore = useMainStore();
 
 const props = defineProps({
-  cell: Object,
+  idx: Number,
 });
 
 const progress = ref(0);
 let animationFrame;
+
+const cell = mainStore.activeResource.board[props.idx];
+
 function startHold() {
   // Нельзя тап по уже открытым
-  if (mainStore.isCapitansMode || props.cell.isActive) return;
+  if (mainStore.isCapitansMode || cell.isActive) return;
 
   // Мультитач при зуме
   if (event.touches && event.touches.length > 1) return;
@@ -30,7 +33,13 @@ function startHold() {
     if (progress.value < 100) {
       animationFrame = requestAnimationFrame(animate);
     } else {
-      props.cell.isActive = true;
+      // cell.isActive = true;
+      // вместо
+      // Добавление isActive всем ресурсам
+      mainStore.resources.forEach((resource) => {
+        resource.board[props.idx].isActive = true;
+      });
+
       progress.value = 0;
     }
   }
@@ -56,7 +65,10 @@ function cancelHold() {
 
 <template>
   <button
-    :class="['cell', (mainStore.isCapitansMode || props.cell.isActive) && '_team-' + props.cell.team]"
+    :class="[
+      'cell',
+      (mainStore.isCapitansMode || cell.isActive) && '_team-' + cell.team,
+    ]"
     @mousedown="startHold"
     @touchstart="startHold"
     @mouseup="cancelHold"
@@ -66,18 +78,19 @@ function cancelHold() {
   >
     <div class="progress" :style="{ width: progress + '%' }"></div>
 
-    <span class="text" v-if="props.cell.type === 'text'" :style="{ '--char-count': props.cell.value.length }">{{ props.cell.value }}</span>
-    <img class="image" v-else :src="props.cell.value" alt="codename" />
+    <span
+      class="text"
+      v-if="cell.type === 'text'"
+      :style="{ '--char-count': cell.value.length }"
+      >{{ cell.value }}</span
+    >
+    <img class="image" v-else :src="cell.value" alt="codename" />
   </button>
 </template>
 
 <style lang="scss" scoped>
 .cell {
   padding: 5px;
-  font-family: roboto;
-  text-transform: uppercase;
-  text-align: center;
-  font-weight: 500;
   border: 1px solid $color-dashed-border;
   border-radius: 6px;
 
@@ -103,10 +116,18 @@ function cancelHold() {
 
 .text {
   white-space: nowrap;
+  font-family: roboto;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 400;
   font-style: italic;
+  letter-spacing: -0.05em;
 
   transform: rotate(90deg);
-  font-size: min(calc((100cqh / var(--char-count)) * 1.35), calc((100cqh / 6) * 1.35));
+  font-size: min(
+    calc((100cqh / var(--char-count)) * 1.4),
+    calc((100cqh / 6) * 1.4)
+  );
 }
 
 .image {

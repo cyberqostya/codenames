@@ -1,6 +1,4 @@
 <script setup>
-import { computed, defineAsyncComponent } from "vue";
-
 const props = defineProps({
   color: {
     type: String,
@@ -10,27 +8,9 @@ const props = defineProps({
     },
   },
 
-  icon: {
-    type: String,
-    validator(value) {
-      return ["arrow", "cog"].includes(value);
-    },
-  },
-
   href: {
     type: String,
   },
-});
-
-// Динамический импорт нужной картинки
-const iconMap = {
-  arrow: () => import("@c/SVG/Arrow.vue"),
-  cog: () => import("@c/SVG/Cog.vue"),
-};
-const iconComponent = computed(() => {
-  if (props.icon) {
-    return defineAsyncComponent(iconMap[props.icon]);
-  }
 });
 
 const colors = {
@@ -40,14 +20,13 @@ const colors = {
 </script>
 
 <template>
-  <component :class="['button', color, icon && 'icon']" :is="href ? 'a' : 'button'" :href="href" :target="href && '_blank'">
-    <template v-if="icon">
-      <component :is="iconComponent" :color="colors[color]" />
-    </template>
-
-    <template v-else>
-      <slot />
-    </template>
+  <component
+    :class="['button', color, icon && 'icon']"
+    :is="href ? 'a' : 'button'"
+    :href="href"
+    :target="href && '_blank'"
+  >
+    <slot />
   </component>
 </template>
 
@@ -62,10 +41,8 @@ const colors = {
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   font-weight: 900;
-  letter-spacing: -0.05em;
   font-family: opensans;
   text-transform: uppercase;
-  letter-spacing: -1px;
 
   transition: opacity 0.4s;
 }
@@ -83,9 +60,5 @@ const colors = {
   &.disabled {
     opacity: 0.4;
   }
-}
-
-.icon {
-  padding: 5px;
 }
 </style>

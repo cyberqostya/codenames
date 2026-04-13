@@ -2,35 +2,44 @@
 import Button from "@c/Button.vue";
 import { useMainStore } from "@/stores/mainStore";
 import { computed } from "vue";
+import Cog from "@c/SVG/Cog.vue";
 const mainStore = useMainStore();
 
-function getCount(color) {
-  return mainStore.board.filter((i) => i.team === color && !i.isActive).length;
-}
-const displayOrder = ["red", "blue"].sort((a, b) => getCount(b) - getCount(a)).concat("common");
 const counters = computed(() => {
-  const initialAcc = Object.fromEntries(displayOrder.map((color) => [color, 0]));
-
-  return mainStore.board.reduce((acc, item) => {
-    if (item.team in acc && !item.isActive) {
-      acc[item.team]++;
-    }
-    return acc;
-  }, initialAcc);
+  return mainStore.activeResource.board.reduce(
+    (acc, item) => {
+      if (item.team in acc && !item.isActive) {
+        acc[item.team]++;
+      }
+      return acc;
+    },
+    Object.fromEntries(mainStore.teamNames.map((color) => [color, 0])),
+  );
 });
 </script>
 
 <template>
   <header class="header">
-    <Button color="gold" @click="mainStore.toggleCapitansMode" :class="!mainStore.isCapitansMode && 'disabled'">Captain</Button>
+    <Button
+      color="gold"
+      @click="mainStore.toggleCapitansMode"
+      :class="!mainStore.isCapitansMode && 'disabled'"
+    >
+      Captain
+    </Button>
 
     <div class="counters">
-      <p :class="['counter', '_team-' + color]" v-for="color in displayOrder" :key="color">
-        <span>{{ counters[color] }}</span>
+      <p
+        :class="['counter', '_team-' + color]"
+        v-for="color in mainStore.teamNames"
+        :key="color"
+      >
+        {{ counters[color] }}
       </p>
     </div>
 
-    <Button color="gold" @click="mainStore.toggleSettings" icon="cog" />
+    <button class="settings" @click="mainStore.openSettings"><Cog /></button>
+
     <a class="coin" href="https://pay.cloudtips.ru/p/656a5ae1" target="_blank">
       <img src="/images/coin.png" />
     </a>
@@ -47,6 +56,10 @@ const counters = computed(() => {
   gap: 5px;
 }
 
+.is-telegram .header {
+  margin-top: 42px;
+}
+
 .counters {
   display: flex;
   align-items: center;
@@ -57,7 +70,7 @@ const counters = computed(() => {
 }
 
 .counter {
-  width: 2ch;
+  width: 2.5ch;
   line-height: 1;
   border-radius: 6px;
 
@@ -68,6 +81,11 @@ const counters = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.settings {
+  width: 34px;
+  aspect-ratio: 1;
 }
 
 .coin {
@@ -100,19 +118,24 @@ const counters = computed(() => {
 }
 @keyframes coinShine {
   0% {
-    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98) saturate(0.96);
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98)
+      saturate(0.96);
   }
   4% {
-    filter: drop-shadow(0 5px 11px rgba(176, 123, 18, 0.28)) brightness(1.12) saturate(1.08);
+    filter: drop-shadow(0 5px 11px rgba(176, 123, 18, 0.28)) brightness(1.12)
+      saturate(1.08);
   }
   8% {
-    filter: drop-shadow(0 4px 9px rgba(151, 101, 11, 0.22)) brightness(1.02) saturate(1);
+    filter: drop-shadow(0 4px 9px rgba(151, 101, 11, 0.22)) brightness(1.02)
+      saturate(1);
   }
   10% {
-    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98) saturate(0.96);
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98)
+      saturate(0.96);
   }
   100% {
-    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98) saturate(0.96);
+    filter: drop-shadow(0 4px 8px rgba(151, 101, 11, 0.2)) brightness(0.98)
+      saturate(0.96);
   }
 }
 </style>

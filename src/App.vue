@@ -6,7 +6,7 @@ import { useMainStore } from "./stores/mainStore";
 import Board from "@c/Board.vue";
 
 const mainStore = useMainStore();
-mainStore.init();
+mainStore.createBoards();
 </script>
 
 <template>

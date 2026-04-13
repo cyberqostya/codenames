@@ -11,19 +11,25 @@ const mainStore = useMainStore();
       '--columns': mainStore.rows,
     }"
   >
-    <Cell v-for="(cell, ind) in mainStore.board" :cell="cell" :key="ind" />
+    <Cell
+      v-for="(cell, idx) in mainStore.activeResource.board"
+      :idx="idx"
+      :key="cell.value"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .board {
-  --columns: 5;
-
   display: grid;
   grid-template-columns: repeat(var(--columns), 1fr);
   grid-auto-rows: 1fr;
   gap: 5px;
   padding: 5px;
   height: 100%;
+}
+
+.is-telegram .board {
+  padding-bottom: calc(24px + 5px);
 }
 </style>

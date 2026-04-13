@@ -7,31 +7,53 @@ import { ref, computed } from "vue";
 
 const mainStore = useMainStore();
 
-function handleClick(ind) {
-  mainStore.setActiveResourceIndex(ind);
-  mainStore.setBoard();
-}
-
 const cellText = computed({
   get() {
-    return mainStore.board
+    return mainStore.activeResource.board
       .filter((i) => i.type === "text")
       .map((cell) => cell.value)
       .join(", ");
   },
   set(newVal) {
     const values = newVal.split(",").map((s) => s.trim());
-    const boardTextCells = mainStore.board.filter((i) => i.type === "text");
+    const boardTextCells = mainStore.activeResource.board.filter(
+      (i) => i.type === "text",
+    );
     values.forEach((i, ind) => {
       if (boardTextCells[ind]) boardTextCells[ind].value = i;
     });
-    // for (let i = 0; i < values.length; i++) {
-    //   if (mainStore.board[i]) {
-    //     mainStore.board[i].value = values[i];
-    //   }
-    // }
   },
 });
+
+const boardColumnsRangeArray = Array(
+  mainStore.MAX_COLUMNS - mainStore.MIN_COLUMNS + 1,
+)
+  .fill(0)
+  .map((_, ind) => mainStore.MIN_COLUMNS + ind);
+
+const columns = ref(mainStore.columns);
+const rows = ref(mainStore.rows);
+const isNewGame = computed(() => {
+  return (
+    columns.value !== mainStore.columns ||
+    rows.value !== mainStore.rows ||
+    mainStore.isReshuffleCards
+  );
+});
+function resume() {
+  if (isNewGame.value) {
+    // Задаем количество колонок всегда >= строк
+    const [c, r] = [columns.value, rows.value].sort((a, b) => b - a);
+
+    mainStore.setColumns(c);
+    mainStore.setRows(r);
+    mainStore.createBoards();
+  } else if (mainStore.isChangeCapitansMap) {
+    mainStore.setCapitansKey();
+  }
+
+  mainStore.closeSettings();
+}
 </script>
 
 <template>
@@ -41,16 +63,30 @@ const cellText = computed({
     <div class="field">
       <span class="field__title">Columns:</span>
 
-      <div class="arrows">
-        <Button :class="mainStore.columns !== i && 'disabled'" @click="mainStore.setColRow('columns', i)" v-for="i in [2, 3, 4, 5, 6]" style="width: 34px">{{ i }}</Button>
+      <div class="cards-buttons">
+        <Button
+          v-for="i in boardColumnsRangeArray"
+          :class="{ disabled: i != columns }"
+          @click="columns = i"
+          :key="i"
+        >
+          {{ i }}
+        </Button>
       </div>
     </div>
 
     <div class="field">
       <span class="field__title">Rows:</span>
 
-      <div class="arrows">
-        <Button :class="mainStore.rows !== i && 'disabled'" @click="mainStore.setColRow('rows', i)" v-for="i in [2, 3, 4, 5, 6]" style="width: 34px">{{ i }}</Button>
+      <div class="cards-buttons">
+        <Button
+          v-for="i in boardColumnsRangeArray"
+          :class="{ disabled: i != rows }"
+          @click="rows = i"
+          :key="i"
+        >
+          {{ i }}
+        </Button>
       </div>
     </div>
 
@@ -58,16 +94,55 @@ const cellText = computed({
       <span class="field__title">Cards:</span>
 
       <div class="cards-buttons">
-        <Button v-for="(i, ind) in mainStore.resources" :key="ind" @click="handleClick(ind)" :class="mainStore.activeResourceIndex !== ind && 'disabled'">{{ i.title }}</Button>
+        <Button
+          v-for="i in mainStore.resources"
+          :key="i.title"
+          @click="mainStore.setActiveResource(i)"
+          :class="{ disabled: !i.isActive }"
+        >
+          {{ i.title }}
+        </Button>
       </div>
     </div>
 
-    <div class="field" v-if="mainStore.board.find((i) => i.type === 'text')">
+    <div
+      class="field"
+      v-if="
+        !isNewGame &&
+        mainStore.activeResource.board.find((i) => i.type === 'text')
+      "
+    >
       <span class="field__title">Words: (can edit)</span>
-      <Input tag="textarea" class="input" v-model="cellText" ref="textareaNode" />
+      <Input
+        tag="textarea"
+        class="input"
+        v-model="cellText"
+        ref="textareaNode"
+      />
     </div>
 
-    <Button color="gold" style="margin: auto 5px 5px" @click="mainStore.startGame">Resume</Button>
+    <div class="field">
+      <span class="field__title"></span>
+
+      <div class="cards-buttons">
+        <Button
+          @click="mainStore.toggleIsChangeCapitansMap()"
+          :class="{ disabled: !mainStore.isChangeCapitansMap }"
+        >
+          Change Capitans Map
+        </Button>
+        <Button
+          @click="mainStore.toggleIsReshuffleCards()"
+          :class="{ disabled: !mainStore.isReshuffleCards }"
+        >
+          Reshuffle cards
+        </Button>
+      </div>
+    </div>
+
+    <Button color="gold" class="close" @click="resume">
+      {{ isNewGame ? "New Game" : "Resume" }}
+    </Button>
   </section>
 </template>
 
@@ -83,6 +158,11 @@ const cellText = computed({
   background-color: $color-back;
 }
 
+.is-telegram .settings {
+  margin-top: 42px;
+  margin-bottom: 24px;
+}
+
 .title {
   border-bottom: 1px dashed $color-dashed-border;
   padding: 5px;
@@ -90,11 +170,10 @@ const cellText = computed({
 }
 
 .field {
-  padding: 0.5em 5px;
+  padding: 5px 5px;
 
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 0.5fr 1fr;
   gap: 5px;
 
   border-bottom: 1px dashed $color-dashed-border;
@@ -103,8 +182,6 @@ const cellText = computed({
 .field__title {
   font-size: 16px;
   font-weight: 600;
-  font-style: italic;
-
   margin-right: auto;
 }
 
@@ -114,23 +191,15 @@ const cellText = computed({
   gap: 10px;
 }
 
-.arrows {
-  display: flex;
-  gap: 5px;
-}
-.arrows-texts {
-  display: flex;
-  gap: 5px;
-
-  b {
-    font-size: 20px;
-  }
-}
-
 .cards-buttons {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
+
+  & > * {
+    flex: 1 1 1%;
+    min-width: min-content;
+  }
 }
 
 .input {
@@ -141,5 +210,10 @@ const cellText = computed({
   font-weight: 600;
   resize: vertical;
   line-height: 1.2;
+}
+
+.close {
+  margin: auto 5px 5px;
+  min-height: 64px;
 }
 </style>
