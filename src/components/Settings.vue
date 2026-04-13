@@ -113,7 +113,11 @@ function withVibro(f) {
         <Button
           v-for="i in mainStore.resources"
           :key="i.title"
-          @click="withVibro(mainStore.setActiveResource(i))"
+          @click="
+            withVibro(() => {
+              mainStore.setActiveResource(i);
+            })
+          "
           :class="{ disabled: !i.isActive }"
         >
           {{ i.title }}

@@ -51,18 +51,18 @@ main {
 }
 
 ._team-red {
-  background-color: $color-codenames-red-back;
-  color: $color-codenames-red-text;
+  background: $color-codenames-red-back !important;
+  color: $color-codenames-red-text !important;
 }
 ._team-blue {
-  background-color: $color-codenames-blue-back;
-  color: $color-codenames-blue-text;
+  background: $color-codenames-blue-back !important;
+  color: $color-codenames-blue-text !important;
 }
 ._team-black {
-  background-color: $color-codenames-black-back;
-  color: $color-codenames-black-text;
+  background: $color-codenames-black-back !important;
+  color: $color-codenames-black-text !important;
 }
 ._team-common {
-  background-color: $color-codenames-common-back;
-  color: $color-codenames-common-text;
+  background: $color-codenames-common-back !important;
+  color: $color-codenames-common-text !important;
 }

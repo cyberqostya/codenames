@@ -97,8 +97,16 @@ function cancelHold() {
 <style lang="scss" scoped>
 .cell {
   padding: 5px;
-  border: 1px solid $color-dashed-border;
-  border-radius: 6px;
+  border: 1px solid rgba($color-gray-400, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(#fff, 0.34), rgba(#fff, 0) 42%),
+    linear-gradient(180deg, $color-back-second, $color-back);
+  box-shadow:
+    0 1px 0 rgba(#fff, 0.72) inset,
+    0 -1px 0 rgba($color-gray-400, 0.08) inset,
+    0 7px 12px rgba($color-gray-400, 0.16),
+    0 2px 3px rgba($color-black, 0.12);
 
   display: flex;
   align-items: center;
@@ -108,6 +116,28 @@ function cancelHold() {
   overflow: hidden;
 
   container-type: size;
+  transform: translateY(0);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.cell::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 24% 16%,
+    rgba(#fff, 0.38),
+    rgba(#fff, 0) 34%
+  );
+  z-index: 1;
+}
+.cell[class*="team"]::before {
+  display: none;
 }
 
 .progress {
@@ -117,7 +147,7 @@ function cancelHold() {
   width: 0%;
   height: 100%;
   background: rgba($color-gold, 0.4);
-  z-index: 1;
+  z-index: 2;
 }
 
 .text {
@@ -134,6 +164,10 @@ function cancelHold() {
     calc((100cqh / var(--char-count)) * 1.4),
     calc((100cqh / 6) * 1.4)
   );
+  position: relative;
+  z-index: 3;
+
+  pointer-events: none;
 }
 
 .image {
@@ -141,5 +175,10 @@ function cancelHold() {
   transform: rotate(90deg);
   width: 100cqh;
   height: 100cqi;
+  position: relative;
+  z-index: 3;
+  filter: drop-shadow(0 2px 2px rgba($color-black, 0.1));
+
+  pointer-events: none;
 }
 </style>
