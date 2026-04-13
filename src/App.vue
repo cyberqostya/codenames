@@ -34,4 +34,12 @@ mainStore.createBoards();
     border-right: 1px dashed $color-dashed-border;
   }
 }
+
+.is-telegram .main {
+  padding-top: env(safe-area-inset-top);
+  padding-top: var(--tg-safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--tg-safe-area-inset-bottom);
+  box-sizing: border-box;
+}
 </style>
