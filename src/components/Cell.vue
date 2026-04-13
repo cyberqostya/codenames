@@ -49,6 +49,9 @@ function startHold(event) {
       progress.value = 0;
 
       triggerHaptic("medium");
+      setTimeout(() => {
+        triggerHaptic("heavy");
+      }, 120);
     }
   }
   animationFrame = requestAnimationFrame(animate);

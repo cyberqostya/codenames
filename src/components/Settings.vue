@@ -146,9 +146,11 @@ function withVibro(f) {
   background-color: $color-back;
 }
 
-.is-telegram .settings {
-  margin-top: 42px;
-  margin-bottom: 24px;
+:global(.is-telegram) .settings {
+  inset:
+    var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px))
+    0
+    var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
 }
 
 .title {

@@ -57,6 +57,10 @@ function closeKeyboardOnOutsideTap(event) {
   document.activeElement?.blur();
 }
 
+function blurActiveElement() {
+  document.activeElement?.blur();
+}
+
 onMounted(() => {
   document.addEventListener("pointerdown", closeKeyboardOnOutsideTap);
 });
@@ -72,9 +76,12 @@ onBeforeUnmount(() => {
       v-for="(cell, index) in cells"
       :key="getWordKey(cell, index)"
       class="word-input"
+      enterkeyhint="done"
+      autocomplete="off"
       :model-value="getWordValue(cell, index)"
       @update:model-value="updateWord(cell, index, $event)"
       @blur="restoreWordIfEmpty(cell, index)"
+      @keydown.enter.prevent="blurActiveElement"
     />
   </div>
 </template>
