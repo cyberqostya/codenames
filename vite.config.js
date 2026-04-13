@@ -102,19 +102,23 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match("${base}index.html")),
+      fetch(request).catch(() => caches.match("${base}index.html", { ignoreSearch: true })),
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then(async (cachedResponse) => {
+    caches.match(request, { ignoreSearch: true }).then(async (cachedResponse) => {
       if (cachedResponse) return cachedResponse;
 
-      const response = await fetch(request);
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone());
-      return response;
+      try {
+        const response = await fetch(request);
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(request, response.clone());
+        return response;
+      } catch {
+        return new Response("Offline", { status: 503, statusText: "Offline" });
+      }
     }),
   );
 });

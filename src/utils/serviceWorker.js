@@ -7,6 +7,24 @@ export const offlineCacheState = reactive({
   failedCount: 0,
 });
 
+async function startServiceWorker() {
+  const registration = await navigator.serviceWorker.register(
+    `${import.meta.env.BASE_URL}sw.js`,
+  );
+
+  if (registration.active) {
+    cacheOfflineAssets(registration.active);
+    return;
+  }
+
+  const worker = registration.installing || registration.waiting;
+  worker?.addEventListener("statechange", () => {
+    if (worker.state === "activated") {
+      cacheOfflineAssets(worker);
+    }
+  });
+}
+
 function cacheOfflineAssets(worker) {
   if (!worker) return;
 
@@ -15,7 +33,8 @@ function cacheOfflineAssets(worker) {
 }
 
 export function registerServiceWorker() {
-  offlineCacheState.isSupported = "serviceWorker" in navigator;
+  offlineCacheState.isSupported =
+    "serviceWorker" in navigator && "caches" in window;
 
   if (!import.meta.env.PROD || !offlineCacheState.isSupported) return;
 
@@ -33,21 +52,9 @@ export function registerServiceWorker() {
     }
   });
 
-  window.addEventListener("load", async () => {
-    const registration = await navigator.serviceWorker.register(
-      `${import.meta.env.BASE_URL}sw.js`,
-    );
-
-    if (registration.active) {
-      cacheOfflineAssets(registration.active);
-      return;
-    }
-
-    const worker = registration.installing || registration.waiting;
-    worker?.addEventListener("statechange", () => {
-      if (worker.state === "activated") {
-        cacheOfflineAssets(worker);
-      }
-    });
-  });
+  if (document.readyState === "complete") {
+    startServiceWorker();
+  } else {
+    window.addEventListener("load", startServiceWorker, { once: true });
+  }
 }
