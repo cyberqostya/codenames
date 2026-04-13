@@ -1,30 +1,16 @@
 <script setup>
 import Title from "@c/Title.vue";
 import Button from "@c/Button.vue";
-import Input from "@c/Input.vue";
+import WordsEditor from "@c/WordsEditor.vue";
 import { useMainStore } from "@/stores/mainStore";
 import { ref, computed } from "vue";
 import { triggerHaptic } from "@/utils/telegram";
 
 const mainStore = useMainStore();
 
-const cellText = computed({
-  get() {
-    return mainStore.activeResource.board
-      .filter((i) => i.type === "text")
-      .map((cell) => cell.value)
-      .join(", ");
-  },
-  set(newVal) {
-    const values = newVal.split(",").map((s) => s.trim());
-    const boardTextCells = mainStore.activeResource.board.filter(
-      (i) => i.type === "text",
-    );
-    values.forEach((i, ind) => {
-      if (boardTextCells[ind]) boardTextCells[ind].value = i;
-    });
-  },
-});
+const textCells = computed(() =>
+  mainStore.activeResource.board.filter((i) => i.type === "text"),
+);
 
 const boardColumnsRangeArray = Array(
   mainStore.MAX_COLUMNS - mainStore.MIN_COLUMNS + 1,
@@ -125,39 +111,21 @@ function withVibro(f) {
       </div>
     </div>
 
-    <div
-      class="field"
-      v-if="
-        !isNewGame &&
-        mainStore.activeResource.board.find((i) => i.type === 'text')
-      "
-    >
-      <span class="field__title">Words: (can edit)</span>
-      <Input
-        tag="textarea"
-        class="input"
-        v-model="cellText"
-        ref="textareaNode"
-      />
-    </div>
+    <WordsEditor v-if="!isNewGame && textCells.length" :cells="textCells" />
 
-    <div class="field">
-      <span class="field__title"></span>
-
-      <div class="cards-buttons">
-        <Button
-          @click="withVibro(mainStore.toggleIsChangeCapitansMap)"
-          :class="{ disabled: !mainStore.isChangeCapitansMap }"
-        >
-          Change Capitans Map
-        </Button>
-        <Button
-          @click="withVibro(mainStore.toggleIsReshuffleCards)"
-          :class="{ disabled: !mainStore.isReshuffleCards }"
-        >
-          Reshuffle cards
-        </Button>
-      </div>
+    <div :class="['cards-buttons', '_mine']">
+      <Button
+        @click="withVibro(mainStore.toggleIsChangeCapitansMap)"
+        :class="{ disabled: !mainStore.isChangeCapitansMap }"
+      >
+        Change Capitans Map
+      </Button>
+      <Button
+        @click="withVibro(mainStore.toggleIsReshuffleCards)"
+        :class="{ disabled: !mainStore.isReshuffleCards }"
+      >
+        Reshuffle cards
+      </Button>
     </div>
 
     <Button color="gold" class="close" @click="resume">
@@ -190,19 +158,19 @@ function withVibro(f) {
 }
 
 .field {
-  padding: 5px 5px;
+  padding: 5px;
+  border-bottom: 1px dashed $color-dashed-border;
 
   display: grid;
   grid-template-columns: 0.5fr 1fr;
   gap: 5px;
-
-  border-bottom: 1px dashed $color-dashed-border;
 }
 
 .field__title {
   font-size: 16px;
   font-weight: 600;
   margin-right: auto;
+  line-height: 1;
 }
 
 .field__data {
@@ -220,16 +188,11 @@ function withVibro(f) {
     flex: 1 1 1%;
     min-width: min-content;
   }
-}
 
-.input {
-  width: 100%;
-  height: 8em;
-  text-transform: uppercase;
-  font-style: italic;
-  font-weight: 600;
-  resize: vertical;
-  line-height: 1.2;
+  &._mine {
+    padding: 5px;
+    border-bottom: 1px dashed $color-dashed-border;
+  }
 }
 
 .close {

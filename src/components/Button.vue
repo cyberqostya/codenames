@@ -12,11 +12,6 @@ const props = defineProps({
     type: String,
   },
 });
-
-const colors = {
-  gray: "#1d1d1d",
-  gold: "#fff",
-};
 </script>
 
 <template>
@@ -34,7 +29,7 @@ const colors = {
 .button {
   padding: 10px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 16px;
   flex-shrink: 0;
   touch-action: manipulation;
   box-sizing: border-box;
