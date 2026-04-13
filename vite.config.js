@@ -26,19 +26,46 @@ function offlineServiceWorkerPlugin() {
       }
 
       const files = getFiles(distDir).map((file) => {
-        const relativePath = path.relative(distDir, file).replaceAll(path.sep, "/");
+        const relativePath = path
+          .relative(distDir, file)
+          .replaceAll(path.sep, "/");
         return `${base}${relativePath}`;
       });
 
       const serviceWorker = `
 const CACHE_NAME = "codenames-${version}";
-const APP_SHELL = ${JSON.stringify([base, `${base}index.html`, ...files], null, 2)};
+const PRECACHE_URLS = ${JSON.stringify([base, `${base}index.html`, ...files], null, 2)};
+const CORE_URLS = PRECACHE_URLS.filter((url) => !/\\.(png|jpe?g|webp|avif|svg)$/i.test(url));
+
+async function cacheUrls(urls) {
+  const cache = await caches.open(CACHE_NAME);
+  const results = await Promise.allSettled(
+    urls.map(async (url) => {
+      const response = await fetch(url, { cache: "reload" });
+
+      if (!response.ok) {
+        throw new Error(\`Failed to cache \${url}: \${response.status}\`);
+      }
+
+      await cache.put(url, response);
+    }),
+  );
+
+  return results.filter((result) => result.status === "rejected").length;
+}
+
+async function notifyClients(message) {
+  const clients = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+
+  clients.forEach((client) => client.postMessage(message));
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting()),
+    cacheUrls(CORE_URLS).then(() => self.skipWaiting()),
   );
 });
 
@@ -51,6 +78,19 @@ self.addEventListener("activate", (event) => {
           .map((cacheName) => caches.delete(cacheName)),
       ))
       .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type !== "CACHE_OFFLINE_ASSETS") return;
+
+  event.waitUntil(
+    notifyClients({ type: "OFFLINE_CACHE_STARTED" })
+      .then(() => cacheUrls(PRECACHE_URLS))
+      .then((failedCount) => notifyClients({
+        type: "OFFLINE_CACHE_FINISHED",
+        failedCount,
+      })),
   );
 });
 
@@ -68,9 +108,14 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => (
-      cachedResponse || fetch(request)
-    )),
+    caches.match(request).then(async (cachedResponse) => {
+      if (cachedResponse) return cachedResponse;
+
+      const response = await fetch(request);
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, response.clone());
+      return response;
+    }),
   );
 });
 `;

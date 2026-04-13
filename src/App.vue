@@ -3,6 +3,7 @@ import Header from "@c/Header.vue";
 import Settings from "@c/Settings.vue";
 import BoardOrientationGuard from "@c/BoardOrientationGuard.vue";
 import CapitansCountdown from "@c/CapitansCountdown.vue";
+import OfflineCacheStatus from "@c/OfflineCacheStatus.vue";
 import { useMainStore } from "./stores/mainStore";
 import Board from "@c/Board.vue";
 
@@ -21,6 +22,7 @@ mainStore.createBoards();
     <Settings v-if="mainStore.isSettingsOpened" />
 
     <CapitansCountdown />
+    <OfflineCacheStatus />
   </main>
 </template>
 
