@@ -1,10 +1,21 @@
 <script setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useMainStore } from "@/stores/mainStore";
 import { triggerHaptic } from "@/utils/telegram";
+import { playCountdownTick } from "@/utils/audio";
 
 const mainStore = useMainStore();
 const stepDuration = computed(() => mainStore.CAPITANS_MODE_COUNTDOWN_MS / 3);
+
+watch(
+  () => mainStore.capitansModeCountdownValue,
+  (number) => {
+    if (!mainStore.isCapitansModeCountdown || !number) return;
+
+    playCountdownTick(number);
+  },
+  { immediate: true },
+);
 
 function offCountdown() {
   mainStore.toggleCapitansMode();

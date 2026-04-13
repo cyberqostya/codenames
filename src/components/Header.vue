@@ -4,6 +4,7 @@ import { useMainStore } from "@/stores/mainStore";
 import { computed } from "vue";
 import Cog from "@c/SVG/Cog.vue";
 import { triggerHaptic } from "@/utils/telegram";
+import { unlockCountdownSound } from "@/utils/audio";
 const mainStore = useMainStore();
 
 const counters = computed(() => {
@@ -20,6 +21,11 @@ const counters = computed(() => {
 
 function toggleCapitansMode() {
   triggerHaptic("light");
+
+  if (!mainStore.isCapitansMode && !mainStore.isCapitansModeCountdown) {
+    unlockCountdownSound();
+  }
+
   mainStore.toggleCapitansMode();
 }
 function openSettings() {
