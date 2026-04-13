@@ -8,7 +8,11 @@ const stepDuration = computed(() => mainStore.CAPITANS_MODE_COUNTDOWN_MS / 3);
 
 function offCountdown() {
   mainStore.toggleCapitansMode();
+
   triggerHaptic("light");
+  setTimeout(() => {
+    triggerHaptic("light");
+  }, 80);
 }
 </script>
 

@@ -22,6 +22,10 @@ function toggleCapitansMode() {
   triggerHaptic("light");
   mainStore.toggleCapitansMode();
 }
+function openSettings() {
+  triggerHaptic("light");
+  mainStore.openSettings();
+}
 </script>
 
 <template>
@@ -46,7 +50,7 @@ function toggleCapitansMode() {
       </p>
     </div>
 
-    <button class="settings" @click="mainStore.openSettings"><Cog /></button>
+    <button class="settings" @click="openSettings"><Cog /></button>
 
     <a class="coin" href="https://pay.cloudtips.ru/p/656a5ae1" target="_blank">
       <img src="/images/coin.png" />
